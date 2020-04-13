@@ -1,0 +1,27 @@
+---
+- apt_key: url=https://nginx.org/keys/nginx_signing.key
+
+- apt_repository:
+    filename: nginx
+    repo: deb http://nginx.org/packages/debian/ buster nginx
+
+- apt: pkg=nginx
+- apt: pkg=openssl
+
+- lineinfile:
+    path: /etc/nginx/nginx.conf
+    regexp: '^user(.*)$'
+    line: 'user www-data www-data;'
+
+- file: dest=/etc/nginx/conf.d/default.conf state=absent
+- file: dest=/var/www state=directory owner=root group=root
+- file: dest=/var/www/wwwroot src={{ wwwroot }} state=link owner=www-data group=www-data
+
+- template: src=../assets/nginx.conf.j2 dest=/etc/nginx/conf.d/{{ domain }}.conf
+
+- name: Generate DH Parameters
+  openssl_dhparam:
+    path: /etc/ssl/dhparam.pem
+    size: 2048
+
+- service: name=nginx state=restarted

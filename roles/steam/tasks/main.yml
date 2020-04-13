@@ -1,0 +1,24 @@
+---
+- lineinfile:
+    path: /etc/nginx/conf.d/{{ domain }}.conf
+    regexp: 'nginx-steam-location\.conf'
+    line: ''
+  ignore_errors: yes
+  check_mode: yes
+  register: found
+  failed_when: (found is changed) or (found is failed)
+
+- lineinfile:
+    path: /etc/nginx/conf.d/{{ domain }}.conf
+    regexp: '^(.*location / {)'
+    line: '  include /etc/nginx/nginx-steam-location.conf;\n\n\1'
+    backup: yes
+    backrefs: yes
+  when: not found.changed
+
+- copy: src=../assets/nginx-steam-location.conf dest=/etc/nginx/nginx-steam-location.conf
+
+#- file: dest=/var/www/wwwroot src={{ wwwroot }} state=link owner=www-data group=www-data
+#- file: dest=/var/www/wwwroot src={{ wwwroot }} state=link owner=www-data group=www-data
+
+- service: name=nginx state=reloaded

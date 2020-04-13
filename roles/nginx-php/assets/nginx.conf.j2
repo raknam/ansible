@@ -1,0 +1,36 @@
+server {
+  listen 80;
+  server_name {{ domain }};
+
+  return 301 https://$host$request_uri;
+}
+
+server {
+  listen        443 ssl;
+  server_name   {{ domain }};
+
+  error_log /var/log/nginx/error.log;
+
+  ssl_certificate       /etc/letsencrypt/live/{{ domain }}/fullchain.pem;
+  ssl_certificate_key   /etc/letsencrypt/live/{{ domain }}/privkey.pem;
+  ssl_protocols         TLSv1.2;
+  ssl_ciphers           ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:RSA+AESGCM:RSA+AES:!aNULL:!MD5:!DSS:!AES128;
+  ssl_dhparam           /etc/ssl/dhparam.pem;
+
+  root          /var/www/wwwroot;
+  index         index.html index.php;
+
+  #add_header Strict-Transport-Security "max-age=31536000" always;
+
+  location / {
+    # try to serve file directly, fallback to front controller
+    try_files $uri $uri/ /index.php?$args =404;
+  }
+
+  location ~ \.php$ {
+    include fastcgi_params;
+    fastcgi_intercept_errors on;
+    fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    fastcgi_pass unix:/run/php/{{ php_fpm }}.sock;
+  }
+}

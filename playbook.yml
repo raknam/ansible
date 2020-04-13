@@ -1,0 +1,34 @@
+---
+- name: Preparing System
+  hosts: all
+  pre_tasks:
+    - set_fact: wwwroot="{{ lookup('env','WWWROOT') }}"
+    - apt:
+        pkg: python-apt,bash-completion,git,zip,vim,htop,net-tools
+        update_cache: yes
+    - lineinfile:
+        path: /etc/inputrc
+        regexp: '^# "\\e\[5~": history-search-backward$'
+        line: '"\e[5~": history-search-backward'
+    - lineinfile:
+        path: /etc/inputrc
+        regexp: '^# "\\e\[6~": history-search-forward$'
+        line: '"\e[6~": history-search-forward'
+
+- name: Installing webservers roles
+  hosts: webservers
+  vars:
+    domain: "{{ lookup('env','DOMAIN') }}"
+    ssl_email: "{{ lookup('env','SSL_EMAIL') }}"
+    wwwroot: "{{ wwwroot }}"
+  roles:
+#    - nginx-php
+
+- name: Installing steam roles
+  hosts: steam
+  vars:
+    wwwroot: "{{ wwwroot }}"
+#  tasks:
+#    - include_role: name=nginx-php
+  roles:
+#    - steam

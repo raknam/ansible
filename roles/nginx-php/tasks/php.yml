@@ -1,0 +1,24 @@
+- apt_key: url=https://packages.sury.org/php/apt.gpg
+
+- apt_repository:
+    filename: php-fpm
+    repo: deb https://packages.sury.org/php/ buster main
+
+- apt: pkg=php{{ php_version }}-fpm
+- apt: pkg=php{{ php_version }}-cli
+- apt: pkg=php{{ php_version }}-dev
+- apt: pkg=php{{ php_version }}-bz2
+- apt: pkg=php{{ php_version }}-curl
+- apt: pkg=php{{ php_version }}-gd
+- apt: pkg=php{{ php_version }}-mysql
+- apt: pkg=php{{ php_version }}-sqlite3
+- apt: pkg=php{{ php_version }}-zip
+
+- alternatives: name=php path=/usr/bin/php{{ php_version }}
+- alternatives: name=phpize path=/usr/bin/phpize{{ php_version }}
+- alternatives: name=php-config path=/usr/bin/php-config{{ php_version }}
+
+- lineinfile: path=/etc/php/7.4/fpm/php.ini regexp='^display_errors = Off$' line='display_errors=On'
+- lineinfile: path=/etc/php/7.4/fpm/php.ini regexp='^;cgi.fix_pathinfo=1$' line='cgi.fix_pathinfo=0'
+
+- service: name=php{{ php_version }}-fpm state=started

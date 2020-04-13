@@ -1,0 +1,26 @@
+- copy: src=../assets/letsencrypt-renew.sh dest=/usr/sbin/letsencrypt-renew.sh mode=700
+
+- stat: path=/etc/letsencrypt/live/{{ lookup('env','SSL_DOMAIN') }}
+  register: result
+
+- name: creating ssl
+  shell:
+  args:
+    cmd: |
+      docker run --rm --name certbot \
+        -v "/etc/letsencrypt:/etc/letsencrypt" \
+        -v "/root/.ovhapi:/tmp/.ovhapi" \
+        -v "/var/lib/letsencrypt:/var/lib/letsencrypt" \
+        certbot/dns-ovh certonly --agree-tos --no-eff-email -m {{ ssl_email }} \
+        --server https://acme-v02.api.letsencrypt.org/directory \
+        --dns-ovh --dns-ovh-credentials /tmp/.ovhapi \
+        --dns-ovh-propagation-seconds 10 \
+        -d {{ ssl_domain }}
+  when: result.stat.isdir is not defined
+
+- name: ssl renewal cron
+  cron:
+    name: "certbot renew"
+    minute: "0"
+    hour: "*/6"
+    job: /usr/sbin/letsencrypt-renew.sh
