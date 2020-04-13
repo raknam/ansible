@@ -17,7 +17,7 @@
 
 - copy: src=../assets/nginx-steam-location.conf dest=/etc/nginx/nginx-steam-location.conf
 
-- file: dest=/var/www/wwwroot/assets/img/grid/override src={{ grid_override }} state=link
-- file: dest=/var/www/wwwroot/assets/img/grid/original src={{ grid_original }} state=link
+- file: dest={{ wwwroot }}/assets/img/grid/override src={{ grid_override }} state=link
+- file: dest={{ wwwroot }}/assets/img/grid/original src={{ grid_original }} state=link
 
 - service: name=nginx state=reloaded

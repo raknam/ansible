@@ -2,8 +2,12 @@
 - name: Preparing System
   hosts: all
   pre_tasks:
-    - set_fact: php_version=7.4 wwwroot="{{ lookup('env','WWWROOT') }}" domain="{{ lookup('env','DOMAIN') }}"
+    - set_fact: php_version=7.4
+    - set_fact: wwwroot="{{ lookup('env','WWWROOT') }}"
+    - set_fact: domain="{{ lookup('env','DOMAIN') }}"
+
     - apt: pkg=python-apt,bash-completion,git,zip,vim,htop,net-tools update_cache=yes
+
     - lineinfile:
         path: /etc/inputrc
         backrefs: yes
@@ -15,12 +19,14 @@
         line: '\1'
         regexp: '^# ("\\e\[6~": history-search-forward)$'
 
+
 - name: Installing webservers roles
   hosts: webservers
   vars:
     - ssl_email: "{{ lookup('env','SSL_EMAIL') }}"
   roles:
     - nginx-php
+
 
 - name: Installing steam roles
   hosts: steam
