@@ -3,6 +3,7 @@
   hosts: all
   pre_tasks:
     - set_fact: wwwroot="{{ lookup('env','WWWROOT') }}"
+    - set_fact: domain="{{ lookup('env','DOMAIN') }}"
     - apt:
         pkg: python-apt,bash-completion,git,zip,vim,htop,net-tools
         update_cache: yes
@@ -18,17 +19,20 @@
 - name: Installing webservers roles
   hosts: webservers
   vars:
-    domain: "{{ lookup('env','DOMAIN') }}"
     ssl_email: "{{ lookup('env','SSL_EMAIL') }}"
+    domain: "{{ domain }}"
     wwwroot: "{{ wwwroot }}"
   roles:
-#    - nginx-php
+    - nginx-php
 
 - name: Installing steam roles
   hosts: steam
   vars:
+    grid_original: "{{ lookup('env','STEAM_GRID_ORIGINAL') }}"
+    grid_override: "{{ lookup('env','STEAM_GRID_OVERRIDE') }}"
     wwwroot: "{{ wwwroot }}"
+    domain: "{{ domain }}"
 #  tasks:
 #    - include_role: name=nginx-php
   roles:
-#    - steam
+    - steam
