@@ -1,8 +1,7 @@
 ---
-- lineinfile:
-    path: /etc/nginx/conf.d/{{ domain }}.conf
-    regexp: 'nginx-steam-location\.conf'
-    line: ''
+- apt: pkg=php{{ php_version }}-sqlite3
+
+- lineinfile: path=/etc/nginx/conf.d/{{ domain }}.conf regexp='nginx-steam-location\.conf' line=''
   ignore_errors: yes
   check_mode: yes
   register: found

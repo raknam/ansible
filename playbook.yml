@@ -2,36 +2,31 @@
 - name: Preparing System
   hosts: all
   pre_tasks:
-    - set_fact: wwwroot="{{ lookup('env','WWWROOT') }}"
-    - set_fact: domain="{{ lookup('env','DOMAIN') }}"
-    - apt:
-        pkg: python-apt,bash-completion,git,zip,vim,htop,net-tools
-        update_cache: yes
+    - set_fact: php_version=7.4 wwwroot="{{ lookup('env','WWWROOT') }}" domain="{{ lookup('env','DOMAIN') }}"
+    - apt: pkg=python-apt,bash-completion,git,zip,vim,htop,net-tools update_cache=yes
     - lineinfile:
         path: /etc/inputrc
-        regexp: '^# "\\e\[5~": history-search-backward$'
-        line: '"\e[5~": history-search-backward'
+        backrefs: yes
+        line: '\1'
+        regexp: '^# ("\\e\[5~": history-search-backward)$'
     - lineinfile:
         path: /etc/inputrc
-        regexp: '^# "\\e\[6~": history-search-forward$'
-        line: '"\e[6~": history-search-forward'
+        backrefs: yes
+        line: '\1'
+        regexp: '^# ("\\e\[6~": history-search-forward)$'
 
 - name: Installing webservers roles
   hosts: webservers
   vars:
-    ssl_email: "{{ lookup('env','SSL_EMAIL') }}"
-    domain: "{{ domain }}"
-    wwwroot: "{{ wwwroot }}"
+    - ssl_email: "{{ lookup('env','SSL_EMAIL') }}"
   roles:
     - nginx-php
 
 - name: Installing steam roles
   hosts: steam
   vars:
-    grid_original: "{{ lookup('env','STEAM_GRID_ORIGINAL') }}"
-    grid_override: "{{ lookup('env','STEAM_GRID_OVERRIDE') }}"
-    wwwroot: "{{ wwwroot }}"
-    domain: "{{ domain }}"
+    - grid_original: "{{ lookup('env','STEAM_GRID_ORIGINAL') }}"
+    - grid_override: "{{ lookup('env','STEAM_GRID_OVERRIDE') }}"
 #  tasks:
 #    - include_role: name=nginx-php
   roles:
