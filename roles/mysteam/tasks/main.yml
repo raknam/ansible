@@ -1,0 +1,13 @@
+---
+- apt: pkg=php{{ php_version }}-sqlite3
+
+- template: src=../assets/nginx.conf dest=/etc/nginx/conf.d/{{ domain }}.conf
+
+- file: dest=/var/www/{{ domain }} src={{ wwwroot }} state=link
+- file: dest=/var/www/{{ domain }}/var/shortcuts.vdf src={{ shortcuts }} state=link
+- file: dest=/var/www/{{ domain }}/public/assets/img/grid state=directory
+- file: dest=/var/www/{{ domain }}/public/assets/img/grid/override src={{ grid_override }} state=link
+- file: dest=/var/www/{{ domain }}/public/assets/img/grid/original src={{ grid_original }} state=link
+
+- service: name=nginx state=started
+- service: name=nginx state=reloaded
