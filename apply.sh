@@ -10,4 +10,4 @@ fi
 
 cd $(dirname ${BASH_SOURCE[0]})
 
-sudo -E ANSIBLE_PYTHON_INTERPRETER=auto_silent ansible-playbook --connection=local -i ../inventory.yml playbook.yml
+sudo -E ANSIBLE_PYTHON_INTERPRETER=auto_silent ansible-playbook --connection=local -i inventory.yml playbook.yml
