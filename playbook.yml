@@ -33,6 +33,7 @@
   vars:
     - grid_original: "{{ lookup('env','STEAM_GRID_ORIGINAL') }}"
     - grid_override: "{{ lookup('env','STEAM_GRID_OVERRIDE') }}"
+    - shortcuts: "{{ lookup('env','STEAM_SHORTCUTS') }}"
 #  tasks:
 #    - include_role: name=nginx-php
   roles:
