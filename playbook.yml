@@ -4,6 +4,8 @@
   pre_tasks:
     - set_fact: php_version="7.4"
     - set_fact: php_fpm="php{{ php_version }}-fpm"
+    - set_fact: domain="{{ lookup('env','DOMAIN') }}"
+    - set_fact: wwwroot="{{ lookup('env','WWWROOT') }}"
 
     - apt: pkg=python-apt,bash-completion,git,zip,vim,htop,net-tools update_cache=yes
 
@@ -19,23 +21,23 @@
         regexp: '^# ("\\e\[6~": history-search-forward)$'
 
 
-#- name: Installing webservers roles
-#  hosts: webservers
-#  vars:
-#    - ssl_email: "{{ lookup('env','SSL_EMAIL') }}"
-#  roles:
-#    - nginx-php
-
+- name: Installing webservers roles
+  hosts: webservers
+  vars:
+    - ssl_email: "{{ lookup('env','SSL_EMAIL') }}"
+  roles:
+    - nginx-php
 
 - name: Installing steam roles
   hosts: mysteam
   vars:
-    - domain: "{{ lookup('env','STEAM_DOMAIN') }}"
     - grid_original: "{{ lookup('env','STEAM_GRID_ORIGINAL') }}"
     - grid_override: "{{ lookup('env','STEAM_GRID_OVERRIDE') }}"
     - shortcuts: "{{ lookup('env','STEAM_SHORTCUTS') }}"
-    - wwwroot: "{{ lookup('env','STEAM_WWWROOT') }}"
-  tasks:
-    - include_role: name=nginx-php
   roles:
     - mysteam
+
+- name: Installing hp.eu roles
+  hosts: hpeu
+  roles:
+    - hpeu

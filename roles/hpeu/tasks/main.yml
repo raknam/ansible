@@ -1,0 +1,7 @@
+---
+- template: src=../assets/nginx.conf dest=/etc/nginx/conf.d/{{ domain }}.conf
+
+- file: dest=/var/www/{{ domain }} src={{ wwwroot }} state=link
+
+- service: name=nginx state=started
+- service: name=nginx state=reloaded

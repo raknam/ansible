@@ -1,6 +1,6 @@
 - copy: src=../assets/letsencrypt-renew.sh dest=/usr/sbin/letsencrypt-renew.sh mode=700
 
-- stat: path=/etc/letsencrypt/live/{{ lookup('env','SSL_DOMAIN') }}
+- stat: path=/etc/letsencrypt/live/{{ domain }}
   register: result
 
 - name: creating ssl
@@ -15,7 +15,7 @@
         --server https://acme-v02.api.letsencrypt.org/directory \
         --dns-ovh --dns-ovh-credentials /tmp/.ovhapi \
         --dns-ovh-propagation-seconds 10 \
-        -d {{ ssl_domain }}
+        -d {{ domain }}
   when: result.stat.isdir is not defined
 
 - name: ssl renewal cron
@@ -24,3 +24,7 @@
     minute: "0"
     hour: "*/6"
     job: /usr/sbin/letsencrypt-renew.sh
+
+- name: renewing certificates
+  shell: /usr/sbin/letsencrypt-renew.sh
+  ignore_errors: yes
